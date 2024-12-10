@@ -57,8 +57,6 @@ EleType S3[256] = {0x00,0x03,0x06,0x05,0x0c,0x0f,0x0a,0x09,0x18,0x1b,0x1e,0x1d,0
 
 EleType RC[10] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36 };
 
-EleType IV[16] = "22334455667788";
-EleType IV_o[32] = "31323334353637383132333435363738";
 
 void SubBytes(EleType a[16]);
 void ShiftRows(EleType a[16]);
@@ -79,12 +77,13 @@ int main() {
     EleType* data_o;
     EleType* key_o;
     EleType* key = (EleType*)malloc(sizeof(EleType) * 16);
+    EleType IV[16];
+    EleType IV_o[32] = "31323334353637383132333435363738";
     
     int mode = 0;
     int len;
     printf("0:加密，1:解密，请输入：");
     scanf("%d", &mode);
-    getchar();
 
     if(mode == 0) {
         printf("请输入明文长度：");
@@ -107,15 +106,13 @@ int main() {
     }
 
     scanf("%s", data_o);
-    getchar();
 
     key_o = (EleType*)malloc(sizeof(EleType) * 32);
 
     printf("请输入密钥：");
     scanf("%s", key_o);
-    getchar();
 
-     EleType subkey[11][16];
+    EleType subkey[11][16];
 
     for (int j = 0; j < 32; j+=2) {
         key[j/2] = (transform(key_o[j]))*16+(transform(key_o[j+1]));
@@ -148,7 +145,7 @@ int main() {
             InvAES(data, output, subkey, 10);
 
             if(i > 0) {
-                AddRoundKey(output, pre_data);
+             
                 AddRoundKey(output, pre_output);
             }
             else {
@@ -157,7 +154,6 @@ int main() {
         }
         else {
             if(i > 0) {
-                AddRoundKey(data, pre_data);
                 AddRoundKey(data, pre_output);
             }
             else {
